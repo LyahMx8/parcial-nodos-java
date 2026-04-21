@@ -9,105 +9,94 @@ package com.mycompany.nodos;
  *
  * @author LyahMotta
  */
-class Node {
-    int data;
-    Node left, right;
-
-    public Node(int item) {
-        data = item;
-        left = right = null;
-    }
-}
 
 public class ArbolBinario {
-    Node root;
 
-    // Metodo para insertar un valor en el arbol
-    public void insert(int data) {
-        root = insertRecursive(root, data);
+    public static class Nodo {
+        int data;
+        Nodo left, right;
+
+        public Nodo(int item) {
+            data = item;
+            left = right = null;
+        }
     }
 
-    private Node insertRecursive(Node root, int data) {
-        if (root == null) {
-            return new Node(data);
-        }
-        if (data < root.data) {
-            root.left = insertRecursive(root.left, data);
-        } else if (data > root.data) {
-            root.right = insertRecursive(root.right, data);
+    public static Nodo insert(Nodo root, int value) {
+        if (root == null) return new Nodo(value);
+        
+        if (value < root.data) {
+            root.left = insert(root.left, value);
+        } else if (value > root.data) {
+            root.right = insert(root.right, value);
         }
         return root;
     }
 
-    // Muestra los nodos de menor a mayor
-    public void showInOrder(Node node) {
-        if (node != null) {
-            showInOrder(node.left);
-            System.out.print(node.data + " ");
-            showInOrder(node.right);
+    // Mostrar la secuencia de nodos In-Order
+    public static void showInOrder(Nodo root) {
+        if (root != null) {
+            showInOrder(root.left);
+            System.out.print(root.data + " ");
+            showInOrder(root.right);
         }
     }
 
-    // Cuenta cuantos nodos no tienen hijos
-    public int countLeaves(Node node) {
-        if (node == null) return 0;
-        if (node.left == null && node.right == null) return 1;
-        return countLeaves(node.left) + countLeaves(node.right);
+    // Contar las hojas del árbol
+    public static int countLeaves(Nodo root) {
+        if (root == null) return 0;
+        if (root.left == null && root.right == null) return 1;
+        return countLeaves(root.left) + countLeaves(root.right);
     }
 
-    // Elimina un valor del arbol
-    public void delete(int data) {
-        root = deleteRecursive(root, data);
-    }
-
-    private Node deleteRecursive(Node root, int data) {
+    // Ejercicio 2. Eliminar manteniendo la propiedad de BST
+    public static Nodo delete(Nodo root, int deleteValue) {
         if (root == null) return null;
 
-        if (data < root.data) {
-            root.left = deleteRecursive(root.left, data);
-        } else if (data > root.data) {
-            root.right = deleteRecursive(root.right, data);
+        if (deleteValue < root.data) {
+            root.left = delete(root.left, deleteValue);
+        } else if (deleteValue > root.data) {
+            root.right = delete(root.right, deleteValue);
         } else {
-            // Caso 1: Sin hijos o solo uno
             if (root.left == null) return root.right;
             if (root.right == null) return root.left;
 
-            // Caso 2: Dos hijos (buscamos el valor minimo a la derecha)
             root.data = findMin(root.right);
-            root.right = deleteRecursive(root.right, root.data);
+            root.right = delete(root.right, root.data);
         }
         return root;
     }
 
-    private int findMin(Node root) {
-        int min = root.data;
+    private static int findMin(Nodo root) {
+        int rootData = root.data;
         while (root.left != null) {
-            min = root.left.data;
+            rootData = root.left.data;
             root = root.left;
         }
-        return min;
+        return rootData;
     }
 
     public static void main(String[] args) {
-        BinaryTree tree = new BinaryTree();
+        // En lugar de una clase Arbol, solo manejamos la raiz
+        Nodo root = null;
         int[] valores = {55,25,75,15,35,65,8555,25,75,15,35,65,85};
 
-        // Agregando los valores del arreglo
+        // Llenamos el arbol
         for (int v : valores) {
-            tree.insert(v);
+            root = insert(root, v);
         }
 
-        System.out.print("Secuencia In-Order: ");
-        tree.showInOrder(tree.root);
+        System.out.print("Recorrido del arbol: ");
+        showInOrder(root);
         System.out.println();
 
-        System.out.println("Total de hojas: " + tree.countLeaves(tree.root));
+        System.out.println("Cantidad de hojas de árbol: " + countLeaves(root));
 
-        System.out.println("Eliminando el 75...");
-        tree.delete(75);
-        
-        System.out.print("Secuencia final: ");
-        tree.showInOrder(tree.root);
+        System.out.println("Borrando el valor 65");
+        root = delete(root, 65);
+
+        System.out.print("Árbol final: ");
+        showInOrder(root);
         System.out.println();
     }
 }
